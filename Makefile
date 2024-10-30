@@ -56,4 +56,8 @@ run-docker-default:
 	docker build --build-arg COPY_DB=true -t demo-iot-platform .
 	docker run -d -p 5555:5555 -v demo-iot-platform_data:/app/resources demo-iot-platform
 
+# Run the websocket test script
+run-ws-test:
+	python tests/ws_client_test.py
+
 .PHONY: all install install-dev install_requirements install_dev_requirements clean run run-docker
