@@ -7,12 +7,30 @@ import numpy as np
 import logging
 import asyncio
 from typing import Optional, Union, Tuple
-from app.ws_utils import notify_sensor_ws
 
 logger = logging.getLogger(__name__)
 
 DELAY_STANDARD = 5
 DELAY_MAX = 30
+
+
+class callbacks:
+    def __init__(self) -> None:
+        pass
+
+    def notify_sensor_ws(
+        self,
+        name: str,
+        data: Tuple[Union[int, float, None], Union[int, float, None], int],
+    ) -> None:
+        pass
+
+    def update_sensor_live_data(
+        self,
+        name: str,
+        data: Tuple[Union[int, float, None], Union[int, float, None], int],
+    ) -> None:
+        pass
 
 
 class Sensor:
@@ -36,6 +54,7 @@ class Sensor:
         self._sample_rate = sample_rate
         self._stop_event = asyncio.Event()
         self._task: Optional[asyncio.Task[None]] = None
+        self.update_callbacks: callbacks = callbacks()
 
     @property
     def name(self) -> str:
@@ -57,6 +76,13 @@ class Sensor:
         Returns the maximum data value the sensor can produce.
         """
         return self._max_data
+
+    @property
+    def sample_rate(self) -> int:
+        """
+        Returns the sample rate of the sensor.
+        """
+        return self._sample_rate
 
     def _apply_random_corruption(
         self, original_value: Union[int, float]
@@ -99,9 +125,9 @@ class Sensor:
                         )
                     )
                 self._latest_ts = int(time.time())
-                notify_sensor_ws(
-                    self._name, (self._value, self._prev_value, self._latest_ts)
-                )
+                data = (self._value, self._prev_value, self._latest_ts)
+                self.update_callbacks.notify_sensor_ws(self._name, data)
+                self.update_callbacks.update_sensor_live_data(self._name, data)
                 await asyncio.sleep(self._sample_rate)
         except asyncio.CancelledError:
             logger.info(f"Data generator for sensor '{self._name}' was cancelled.")

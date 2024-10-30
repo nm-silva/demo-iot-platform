@@ -1,17 +1,27 @@
 import asyncio
 import logging
 import time
-from typing import Optional
+from typing import Optional, Tuple, Union
 import numpy as np
 
 from devices.switches.switch import Switch
 from devices.utils import SwitchType
-from app.ws_utils import notify_switch_ws
 
 SAMPLE_RATE_MIN = 5
 SAMPLE_RATE_MAX = 60
 
 logger = logging.getLogger(__name__)
+
+
+class callbacks:
+    def __init__(self) -> None:
+        pass
+
+    def notify_switch_ws(self, name: str, data: Tuple[Union[bool, None], int]) -> None:
+        pass
+
+    def update_switch_live_data(self, name: str, data: Tuple[bool, int]) -> None:
+        pass
 
 
 class PassiveSwitch(Switch):
@@ -26,6 +36,7 @@ class PassiveSwitch(Switch):
         self._type = SwitchType.passive_switch
         self._stop_event = asyncio.Event()
         self._task: Optional[asyncio.Task[None]] = None
+        self.update_callbacks: callbacks = callbacks()
 
     def __del__(self) -> None:
         self.stop()
@@ -48,7 +59,9 @@ class PassiveSwitch(Switch):
             while not self._stop_event.is_set():
                 self._state = not self._state
                 self._latest_ts = int(time.time())
-                notify_switch_ws(self._name, (self._state, self._latest_ts))
+                data = (self._state, self._latest_ts)
+                self.update_callbacks.notify_switch_ws(self._name, data)
+                self.update_callbacks.update_switch_live_data(self._name, data)
                 await asyncio.sleep(np.random.randint(SAMPLE_RATE_MIN, SAMPLE_RATE_MAX))
         except asyncio.CancelledError:
             logger.info(f"Data generator for '{self._name}' was cancelled.")

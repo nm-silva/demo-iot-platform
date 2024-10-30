@@ -30,7 +30,7 @@ class GetAllSwitchStatesResponse(Response):
 
 
 class GetSwitchStateResponse(Response):
-    def __init__(self, name: str, data: Tuple[Union[bool, None], int]):
+    def __init__(self, name: str, data: Union[Tuple[Union[bool, None], int], None]):
         self.type = "get_switch_state_response"
         self.name = name
         self.data = data

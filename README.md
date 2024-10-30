@@ -7,7 +7,7 @@ The end goal is to have a frontend application that the user will be able to cre
 - [x] Device simulation backend
 - [x] REST API
 - [x] Websockets for live data
-- [ ] Database and integration
+- [x] Database and integration
 - [ ] Unit tests for backend
 - [ ] Frontend application
 - [ ] Unit tests for frontend application
