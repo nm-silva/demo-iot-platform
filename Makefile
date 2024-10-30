@@ -31,5 +31,29 @@ $(VENV_DIR)/bin/activate-dev: requirements-dev.txt $(VENV_DIR)/bin/activate
 clean:
 	@echo "Cleaning up..."
 	rm -rf $(VENV_DIR)
+	rm -f resources/database.db
+	-docker ps -aq --filter "volume=demo-iot-platform_data" | xargs -r docker rm -f
+	-docker volume rm -f demo-iot-platform_data || true
 
-.PHONY: all install install-dev install_requirements install_dev_requirements clean
+# Run the application locally
+run:
+	uvicorn app.app:app --host 0.0.0.0 --port 5555 --reload --ws websockets
+
+# Run the application locally with a pre-built database
+run-default: resources/database.db
+	uvicorn app.app:app --host 0.0.0.0 --port 5555 --reload --ws websockets
+
+resources/database.db: resources/template_database.db
+	cp resources/template_database.db resources/database.db
+
+# Build and run the Docker image
+run-docker:
+	docker build -t demo-iot-platform .
+	docker run -d -p 5555:5555 -v demo-iot-platform_data:/app/resources demo-iot-platform
+
+# Build and run the Docker image with a pre-built database
+run-docker-default:
+	docker build --build-arg COPY_DB=true -t demo-iot-platform .
+	docker run -d -p 5555:5555 -v demo-iot-platform_data:/app/resources demo-iot-platform
+
+.PHONY: all install install-dev install_requirements install_dev_requirements clean run run-docker
