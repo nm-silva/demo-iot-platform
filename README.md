@@ -14,7 +14,7 @@ The end goal is to have a frontend application that the user will be able to cre
 2. Run `make install` to install the dependencies
 ### Running the application
 1. Run options:
-    - To run the application locally, run `make run`
+    - To run the application locally, activate the .venv `source .venv/bin/activate`, followed by `make run`
     - To run the application locally with a pre-made database, run `make run-default`
     - To run the application in a Docker container, run `make run-docker`
     - To run the application in a Docker container with a pre-made database, run `make run-docker-default`

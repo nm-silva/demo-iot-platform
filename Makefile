@@ -6,9 +6,13 @@ all: install
 
 # Install dependencies
 install: install_requirements
+	@echo "To activate the virtual environment, run:"
+	@echo "source $(VENV_DIR)/bin/activate"
 
 # Install development dependencies
 install-dev: install_dev_requirements
+	@echo "To activate the virtual environment, run:"
+	@echo "source $(VENV_DIR)/bin/activate"
 
 # Create virtual environment and install Python requirements
 install_requirements: $(VENV_DIR)/bin/activate
