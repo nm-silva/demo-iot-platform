@@ -11,7 +11,7 @@ from devices.errors import (
     DeviceAlreadyExistsError,
 )
 from devices.utils import get_sensor_data_with_timeout
-from typing import Tuple, Union, Dict
+from typing import Optional, Tuple, Union, Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,9 @@ class DeviceManager:
         for device_name in self._devices.keys():
             self.set_switch(device_name, state, type_check=False)
 
-    def get_switch_state(self, name: str, type_check: bool = True) -> Union[bool, None]:
+    def get_switch_state(
+        self, name: str, type_check: bool = True
+    ) -> Optional[Tuple[Union[bool, None], int]]:
         """
         Returns the state of a switch device managed by the device manager.
         """
@@ -152,11 +154,11 @@ class DeviceManager:
 
         return device.state
 
-    def get_all_switch_states(self) -> Dict[str, Union[bool, None]]:
+    def get_all_switch_states(self) -> Dict[str, Tuple[Union[bool, None], int]]:
         """
         Returns the state of all switch devices managed by the device manager.
         """
-        states: Dict[str, Union[bool, None]] = {}
+        states: Dict[str, Tuple[Union[bool, None], int]] = {}
         for device_name in self._devices.keys():
             value = self.get_switch_state(device_name, type_check=False)
             if value is not None:
@@ -165,7 +167,7 @@ class DeviceManager:
 
     def get_sensor_data(
         self, name: str, type_check: bool = True
-    ) -> Union[Tuple[Union[int, float, None], Union[int, float, None]], None]:
+    ) -> Union[Tuple[Union[int, float, None], Union[int, float, None], int], None]:
         """
         Returns the data a sensor device managed by the device manager.
         """
@@ -186,7 +188,7 @@ class DeviceManager:
 
     def get_all_sensor_data(
         self,
-    ) -> Dict[str, Tuple[Union[int, float, None], Union[int, float, None]]]:
+    ) -> Dict[str, Tuple[Union[int, float, None], Union[int, float, None], int]]:
         """
         Returns the data of all sensor devices managed by the device manager.
         """

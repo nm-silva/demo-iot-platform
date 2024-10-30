@@ -14,7 +14,7 @@ class SwitchType(str, Enum):
 
 def get_sensor_data_with_timeout(
     sensor: Sensor, timeout: int = 5
-) -> Tuple[Union[int, float, None], Union[int, float, None]]:
+) -> Tuple[Union[int, float, None], Union[int, float, None], int]:
     """
     Reads data from a sensor with a timeout.
     """

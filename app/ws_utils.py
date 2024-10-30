@@ -21,12 +21,12 @@ async def broadcast(path: str, message: Dict[str, Any]) -> None:
 
 # Callback functions for external data push to each path
 def notify_sensor_ws(
-    name: str, data: Tuple[Union[int, float, None], Union[int, float, None]]
+    name: str, data: Tuple[Union[int, float, None], Union[int, float, None], int]
 ) -> None:
     response = GetSensorDataResponse(name, data)
     asyncio.create_task(broadcast("/sensors", response.to_dict()))
 
 
-def notify_switch_ws(name: str, state: Union[bool, None]) -> None:
-    response = GetSwitchStateResponse(name, state)
+def notify_switch_ws(name: str, data: Tuple[Union[bool, None], int]) -> None:
+    response = GetSwitchStateResponse(name, data)
     asyncio.create_task(broadcast("/switches", response.to_dict()))

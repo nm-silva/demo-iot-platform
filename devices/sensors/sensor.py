@@ -30,6 +30,7 @@ class Sensor:
         self._name = name
         self._value: Union[int, float, None] = float(np.median([min, max]))
         self._prev_value: Union[int, float, None] = None
+        self._latest_ts: int = int(time.time())
         self._min_data = min
         self._max_data = max
         self._sample_rate = sample_rate
@@ -85,13 +86,22 @@ class Sensor:
                 )
                 if self._value is not None and self._value != -999999:
                     self._value = self._apply_random_corruption(
-                        float(np.clip(self._value + change, self._min_data, self._max_data))
+                        float(
+                            np.clip(
+                                self._value + change, self._min_data, self._max_data
+                            )
+                        )
                     )
                 else:
                     self._value = float(
-                        np.clip(self._prev_value + change, self._min_data, self._max_data)
+                        np.clip(
+                            self._prev_value + change, self._min_data, self._max_data
+                        )
                     )
-                notify_sensor_ws(self._name, (self._value, self._prev_value))
+                self._latest_ts = int(time.time())
+                notify_sensor_ws(
+                    self._name, (self._value, self._prev_value, self._latest_ts)
+                )
                 await asyncio.sleep(self._sample_rate)
         except asyncio.CancelledError:
             logger.info(f"Data generator for sensor '{self._name}' was cancelled.")
@@ -107,6 +117,7 @@ class Sensor:
                 "name": self._name,
                 "value": self._value,
                 "prev_value": self._prev_value,
+                "latest_ts": self._latest_ts,
                 "min_data": self._min_data,
                 "max_data": self._max_data,
                 "sample_rate": self._sample_rate,
@@ -143,7 +154,7 @@ class Sensor:
             raise ValueError("Sample rate must be at least 1.")
         self._sample_rate = sample_rate
 
-    def read_data(self) -> Tuple[Union[int, float, None], Union[int, float, None]]:
+    def read_data(self) -> Tuple[Union[int, float, None], Union[int, float, None], int]:
         """
         Returns the data produced by the sensor with a 1% chance of data delay.
         """
@@ -155,4 +166,4 @@ class Sensor:
         if np.random.choice([True, False], p=[0.01, 0.99]):
             logger.warning(f"Data delay_max for sensor '{self._name}'.")
             time.sleep(DELAY_MAX)
-        return self._value, self._prev_value
+        return self._value, self._prev_value, self._latest_ts

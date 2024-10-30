@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from typing import Optional
 import numpy as np
 
@@ -46,7 +47,8 @@ class PassiveSwitch(Switch):
         try:
             while not self._stop_event.is_set():
                 self._state = not self._state
-                notify_switch_ws(self._name, self._state)
+                self._latest_ts = int(time.time())
+                notify_switch_ws(self._name, (self._state, self._latest_ts))
                 await asyncio.sleep(np.random.randint(SAMPLE_RATE_MIN, SAMPLE_RATE_MAX))
         except asyncio.CancelledError:
             logger.info(f"Data generator for '{self._name}' was cancelled.")
