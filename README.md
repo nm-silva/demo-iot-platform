@@ -10,7 +10,6 @@ These require manual installation, if not already installed:
 - Python >= 3.12.7
 - Poetry
 - Docker
-- Docker Compose
 
 ## How to run
 ### Installation
@@ -35,11 +34,12 @@ These require manual installation, if not already installed:
 - [x] REST API
 - [x] Websockets for live data
 - [x] Database and integration
-- [x] Dockerize the application
+- [x] Dockerize the backend app
 - [x] Unit tests for backend
 - [ ] Config files
-- [ ] Frontend application
-- [ ] Unit tests for frontend application
+- [ ] Frontend app
+- [ ] Dockerize the frontend app
+- [ ] Unit tests for frontend app
 - [ ] Integration tests
 - [ ] Automated CI/CD (GitHub Actions)
 - [ ] Increase overall test coverage
