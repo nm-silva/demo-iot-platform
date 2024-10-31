@@ -24,8 +24,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+DB_URL = "resources/database.db"
+
 app = FastAPI()
-device_manager = DeviceManager()
+device_manager = DeviceManager(db_path=DB_URL)
 
 
 @app.websocket("/ws/{path}")

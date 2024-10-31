@@ -52,5 +52,7 @@ class Switch:
         """
         Turns the switch on (True) or off (False).
         """
+        if not isinstance(state, bool):
+            raise ValueError("State must be a boolean.")
         self._state = state
         self._latest_ts = int(time.time())

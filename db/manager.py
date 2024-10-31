@@ -25,32 +25,24 @@ from db.models import (
 from devices.sensors.sensor import Sensor
 from devices.switches.switch import Switch
 
-DB_URL = "sqlite:///resources/database.db"
-
 logger = logging.getLogger(__name__)
 
 
 class DatabaseManager:
-    def __init__(self) -> None:
-        self.db_url = DB_URL
-        self._init_db()
+    def __init__(self, db_path: str) -> None:
+        self.db_url = self._init_db(db_path)
         self.engine = create_engine(self.db_url)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.session: Optional[Session] = None
 
-    def _init_db(self) -> None:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        resources_dir = os.path.join(current_dir, "..", "resources")
-        db_path = os.path.join(resources_dir, "database.db")
-        os.makedirs(resources_dir, exist_ok=True)
-
+    def _init_db(self, db_path: str) -> str:
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
         if not os.path.exists(db_path):
             logger.info("Database file created successfully")
         else:
             logger.info("Database file already exists")
-
-        self.db_url = f"sqlite:///{db_path}"
+        return f"sqlite:///{db_path}"
 
     def connect(self) -> None:
         if self.session is None:

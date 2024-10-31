@@ -24,9 +24,9 @@ class DeviceManager:
     This class represents a device manager, which can manage multiple devices.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, db_path: str) -> None:
         self._devices: Dict[str, Union[Sensor, Switch]] = {}
-        self._db_manager: DatabaseManager = DatabaseManager()
+        self._db_manager: DatabaseManager = DatabaseManager(db_path=db_path)
         self._db_manager.connect()
         self._load_devices()
 

@@ -51,7 +51,7 @@ class Sensor:
         self._latest_ts: int = int(time.time())
         self._min_data = min
         self._max_data = max
-        self._sample_rate = sample_rate
+        self._sample_rate = self._init_sample_rate(sample_rate)
         self._stop_event = asyncio.Event()
         self._task: Optional[asyncio.Task[None]] = None
         self.update_callbacks: callbacks = callbacks()
@@ -83,6 +83,14 @@ class Sensor:
         Returns the sample rate of the sensor.
         """
         return self._sample_rate
+
+    def _init_sample_rate(self, sample_rate: int) -> int:
+        """
+        Initializes the sample rate of the sensor, lowest possible at 1.
+        """
+        if sample_rate < 1:
+            raise ValueError("Sample rate must be at least 1.")
+        return sample_rate
 
     def _apply_random_corruption(
         self, original_value: Union[int, float]
@@ -176,9 +184,7 @@ class Sensor:
         """
         Sets the sample rate of the sensor, lowest possible at 1.
         """
-        if sample_rate < 1:
-            raise ValueError("Sample rate must be at least 1.")
-        self._sample_rate = sample_rate
+        self._sample_rate = self._init_sample_rate(sample_rate)
 
     def read_data(self) -> Tuple[Union[int, float, None], Union[int, float, None], int]:
         """
