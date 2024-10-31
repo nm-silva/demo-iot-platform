@@ -1,40 +1,34 @@
 # Define variables
-VENV_DIR=.venv
+VENV_DIR := .venv
+SHELL := /bin/bash
+export PYTHONPATH := $(shell pwd)
 
 # Default target
 all: install
 
+venv:
+	@if [ ! -d "$(VENV_DIR)" ]; then \
+		echo "Creating virtual environment in $(VENV_DIR)..."; \
+		python3 -m venv $(VENV_DIR); \
+		$(VENV_DIR)/bin/pip install --upgrade pip setuptools; \
+	fi
+
 # Install dependencies
-install: install_requirements
-	@echo "To activate the virtual environment, run:"
-	@echo "source $(VENV_DIR)/bin/activate"
+install: venv
+	@echo "Installing requirements from requirements.txt..."
+	$(VENV_DIR)/bin/pip install -r requirements.txt
 
 # Install development dependencies
-install-dev: install_dev_requirements
-	@echo "To activate the virtual environment, run:"
-	@echo "source $(VENV_DIR)/bin/activate"
-
-# Create virtual environment and install Python requirements
-install_requirements: $(VENV_DIR)/bin/activate
-
-install_dev_requirements: $(VENV_DIR)/bin/activate-dev
-
-$(VENV_DIR)/bin/activate: requirements.txt
-	@echo "Creating virtual environment..."
-	python3 -m venv $(VENV_DIR)
-	@echo "Installing Python requirements..."
-	$(VENV_DIR)/bin/pip install -r requirements.txt
-	@touch $(VENV_DIR)/bin/activate
-
-$(VENV_DIR)/bin/activate-dev: requirements-dev.txt $(VENV_DIR)/bin/activate
-	@echo "Installing development Python requirements..."
+install-dev: venv
+	@echo "Installing requirements from requirements-dev.txt..."
 	$(VENV_DIR)/bin/pip install -r requirements-dev.txt
-	@touch $(VENV_DIR)/bin/activate-dev
 
 # Clean up unnecessary files
 clean:
 	@echo "Cleaning up..."
 	rm -rf $(VENV_DIR)
+	rm -rf .mypy_cache .pytest_cache .ruff_cache
+	rm -rf .coverage htmlcov test_coverage_report.html coverage.xml
 	rm -f resources/database.db
 	-docker ps -aq --filter "volume=demo-iot-platform_data" | xargs -r docker rm -f
 	-docker volume rm -f demo-iot-platform_data || true
@@ -64,4 +58,11 @@ run-docker-default:
 run-ws-test:
 	python tests/ws_client_test.py
 
-.PHONY: all install install-dev install_requirements install_dev_requirements clean run run-docker
+test: venv
+	@echo "Ensuring dev dependencies are installed..."
+	$(VENV_DIR)/bin/pip install -r requirements-dev.txt
+	@echo "Running tests with coverage and creating badge..."
+	$(VENV_DIR)/bin/pytest --cov=./ --cov-report=term --cov-report=xml --cov-report=html:test_coverage_report.html tests/
+	$(VENV_DIR)/bin/genbadge coverage --input-file=coverage.xml --output-file=coverage-badge.svg
+
+.PHONY: all install venv install-dev clean run run-docker run-docker-default run-ws-test test

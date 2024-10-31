@@ -1,5 +1,6 @@
 # resources
 resources/database.db
+resources/test_database
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -54,6 +55,7 @@ coverage.xml
 .pytest_cache/
 .ruff_cache/
 cover/
+test_coverage_report.html
 
 # Translations
 *.mo
@@ -133,6 +135,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.vscode/
 
 # Spyder project settings
 .spyderproject
