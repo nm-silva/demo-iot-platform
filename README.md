@@ -6,7 +6,9 @@ This is a small project to demonstrate an IoT platform. The platform consists of
 The end goal is to have a frontend application that the user will be able to create and manage devices, view live/historical data, and control the devices. The data created by the user will be stored in a local SQLite database which is created on first run time. Because this is just a demo application, it is not recommended to use it in any production environment.
 
 ## Dependencies
+These require manual installation, if not already installed:
 - Python >= 3.12.7
+- Poetry
 - Docker
 - Docker Compose
 
@@ -16,7 +18,7 @@ The end goal is to have a frontend application that the user will be able to cre
 2. Run `make install` to install the dependencies
 ### Running the application
 1. Run options:
-    - To run the application locally, activate the .venv `source .venv/bin/activate`, followed by `make run`
+    - To run the application locally, run `make run`
     - To run the application locally with a pre-made database, run `make run-default`
     - To run the application in a Docker container, run `make run-docker`
     - To run the application in a Docker container with a pre-made database, run `make run-docker-default`

@@ -6,3 +6,31 @@ fix = true
 [tool.mypy]
 python_version = "3.12.7"
 strict = true
+
+[tool.poetry]
+name = "demo-iot-platform"
+version = "0.1.0"
+description = ""
+authors = ["Nuno Silva <nuno.alb@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^2.1.2"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+websockets = "^13.1"
+sqlalchemy = "^2.0.36"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.1"
+mypy = "^1.13.0"
+black = "^24.10.0"
+pytest = "^8.3.3"
+pytest-cov = "^6.0.0"
+genbadge = {extras = ["coverage"], version = "^1.1.1"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
